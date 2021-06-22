@@ -10,40 +10,19 @@ namespace telegram_spamer.Services
 {
     public class ComplimentService
     {
-        private readonly TelegramClient _client;
+        private readonly TelegramService _telegramService = new TelegramService();
 
-        public ComplimentService(TelegramClient client)
+        public ComplimentService()
         {
-            _client = client;
+            _telegramService.Init(SentMessage).GetAwaiter().GetResult();
         }
-
-        public async Task Start()
+        
+        private async Task SentMessage()
         {
-            while (true)
-            {
-                await SendMessage();
-                await Task.Delay(1000 * 60 * 60);
-            }
-        }
-
-        private async Task SendMessage()
-        {
-            var result = await _client.GetContactsAsync();
-
-            var user = result.Users
-                .Where(absUser => absUser.GetType() == typeof(TLUser))
-                .Cast<TLUser>()
-                .FirstOrDefault(x => x.Username == "gektorsun");
-
             var complimentList = await GetCompliments();
-
             var random = new Random();
             var index = random.Next(0, complimentList.Count);
-            if (user != null)
-            {
-                await _client.SendMessageAsync(new TLInputPeerUser {UserId = user.Id}, complimentList[index] + " 😚");
-                // Console.WriteLine($"Send: {complimentList[index] + " 😚"}");
-            }
+            await _telegramService.SentMessage(complimentList[index]);
         }
 
         private static async Task<List<string>> GetCompliments()

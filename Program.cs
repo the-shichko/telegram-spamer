@@ -1,15 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using telegram_spamer.Services;
 
 namespace telegram_spamer
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            var telegram = new TelegramService();
-            var complimentService = new ComplimentService(await telegram.Init());
-            await complimentService.Start();
+            _ = new ComplimentService();
+            Console.WriteLine("Process started");
+            Console.ReadLine();
         }
     }
 }
