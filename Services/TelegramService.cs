@@ -74,6 +74,8 @@ namespace telegram_spamer.Services
 
             if (user != null)
             {
+                var url = await VoiceService.GetVoice(message);
+                var base64Ogg = await 
                 var file = new StreamReader(@"C:\Users\pasha\OneDrive\trash\Обэме (донат Братишкина)_uAZk.ogg");
                 var fileResult = (TLInputFile) await TelegramClient.UploadFile("test.ogg", file);
                 await TelegramClient.SendUploadedDocument(new TLInputPeerUser {UserId = 337383405}, fileResult,
