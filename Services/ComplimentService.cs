@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using TLSchema;
 using TLSharp;
 
@@ -15,14 +17,26 @@ namespace telegram_spamer.Services
         public ComplimentService()
         {
             TelegramService.Init(SentMessage).GetAwaiter().GetResult();
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
         }
-        
+
         private async Task SentMessage()
         {
-            var complimentList = await GetCompliments();
-            var random = new Random();
-            var index = random.Next(0, complimentList.Count);
-            await TelegramService.SentAudio(complimentList[index]);
+            try
+            {
+                var complimentList = await GetCompliments();
+                var random = new Random();
+                var index = random.Next(0, complimentList.Count);
+                await TelegramService.SentAudio(complimentList[index]);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private static async Task<List<string>> GetCompliments()

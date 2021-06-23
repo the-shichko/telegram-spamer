@@ -17,14 +17,14 @@ namespace telegram_spamer.Services
             {
                 new KeyValuePair<string, string>("from", message),
                 new KeyValuePair<string, string>("lang", "ru-RU"),
-                new KeyValuePair<string, string>("speaker", "ermilov"),
-                new KeyValuePair<string, string>("emotion", "neutral"),
+                new KeyValuePair<string, string>("speaker", "nick"),
+                new KeyValuePair<string, string>("emotion", "good"),
                 new KeyValuePair<string, string>("speed", "1.0"),
                 new KeyValuePair<string, string>("format", "mp3"),
-                new KeyValuePair<string, string>("pitch5", "1.0"),
+                new KeyValuePair<string, string>("pitch5", "1.1"),
             });
-            var model = await ApiRequest.Post<VoiceModel>(BaseUrl, "d1_030321.php", formContent);
-            return model.Fname;
+            var model = await ApiRequest.Post<VoiceModel>(BaseUrl, "/d1_030321.php", formContent);
+            return $"{BaseUrl}/{model.Fname}";
         }
     }
 }
