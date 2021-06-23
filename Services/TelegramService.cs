@@ -107,7 +107,7 @@ namespace telegram_spamer.Services
                         _hash = await TelegramClient.SendCodeRequestAsync(_phone);
                         await SentBotMessage(chatId, "Print telegram code");
                         break;
-                    case { } command when command.StartsWith("code"):
+                    case { } command when command.StartsWith("/code"):
                         var argsCode = command.Split(" ").ToList();
                         try
                         {
