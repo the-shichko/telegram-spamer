@@ -76,7 +76,7 @@ namespace telegram_spamer.Services
             {
                 var url = await VoiceService.GetVoice(message);
                 var pathConvertOpus = await ConverterService.ConvertToOpus(url);
-                
+
                 var file = new StreamReader(pathConvertOpus);
                 var fileResult = (TLInputFile) await TelegramClient.UploadFile("test", file);
                 await TelegramClient.SendUploadedDocument(new TLInputPeerUser {UserId = user.Id}, fileResult,
@@ -137,6 +137,9 @@ namespace telegram_spamer.Services
                         StopScheduler();
                         await SentBotMessage(chatId, $"Completed stop");
                         break;
+                    case { } command when command.StartsWith("/status"):
+                        await SentBotMessage(chatId, $"Status: IsRunning - {SchedulerService.Instance.IsRunning}");
+                        break;
                 }
             }
             catch (Exception exception)
@@ -156,7 +159,5 @@ namespace telegram_spamer.Services
         }
 
         private static TelegramClient TelegramClient { get; set; }
-
-        public bool IsRunning { get; set; }
     }
 }

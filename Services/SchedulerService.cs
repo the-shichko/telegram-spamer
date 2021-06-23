@@ -21,8 +21,10 @@ namespace telegram_spamer.Services
         {
             _timers.Clear();
         }
+
+        public bool IsRunning => _timers.Count > 0;
     }
-    
+
     public static class Scheduler
     {
         public static void IntervalInSeconds(double interval, Action task)
@@ -30,15 +32,18 @@ namespace telegram_spamer.Services
             interval /= 3600;
             SchedulerService.Instance.ScheduleTask(interval, task);
         }
+
         public static void IntervalInMinutes(double interval, Action task)
         {
             interval /= 60;
             SchedulerService.Instance.ScheduleTask(interval, task);
         }
+
         public static void IntervalInHours(double interval, Action task)
         {
             SchedulerService.Instance.ScheduleTask(interval, task);
         }
+
         public static void IntervalInDays(double interval, Action task)
         {
             interval *= 24;
@@ -49,5 +54,7 @@ namespace telegram_spamer.Services
         {
             SchedulerService.Instance.StopTasks();
         }
+
+        public static bool IsRunning => SchedulerService.Instance.IsRunning;
     }
 }
