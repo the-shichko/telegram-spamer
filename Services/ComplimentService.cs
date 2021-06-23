@@ -14,7 +14,7 @@ namespace telegram_spamer.Services
 
         public ComplimentService()
         {
-            _telegramService.Init(SentMessage).GetAwaiter().GetResult();
+            TelegramService.Init(SentMessage).GetAwaiter().GetResult();
         }
         
         private async Task SentMessage()
@@ -22,7 +22,7 @@ namespace telegram_spamer.Services
             var complimentList = await GetCompliments();
             var random = new Random();
             var index = random.Next(0, complimentList.Count);
-            await _telegramService.SentMessage(complimentList[index]);
+            await TelegramService.SentAudio(complimentList[index]);
         }
 
         private static async Task<List<string>> GetCompliments()

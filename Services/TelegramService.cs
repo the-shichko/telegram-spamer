@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using TLSchema;
 using TLSharp;
+using TLSharp.Utils;
 
 #pragma warning disable 618
 
@@ -18,7 +20,7 @@ namespace telegram_spamer.Services
         private static string _phone;
         private static Func<Task> _spamMethod;
 
-        public async Task<TelegramClient> Init(Func<Task> runFunc)
+        public static async Task<TelegramClient> Init(Func<Task> runFunc)
         {
             try
             {
@@ -27,7 +29,7 @@ namespace telegram_spamer.Services
                 _botClient.StartReceiving();
                 _botClient.OnMessage += OnBotMessage;
 
-                TelegramClient = new TelegramClient(983781, "afd986c05d86af6e6b7d4d603ba9278f", new FileSessionStore());
+                TelegramClient = new TelegramClient(983781, "afd986c05d86af6e6b7d4d603ba9278f");
                 await TelegramClient.ConnectAsync();
 
                 return TelegramClient;
@@ -40,7 +42,7 @@ namespace telegram_spamer.Services
             }
         }
 
-        public async Task SentMessage(string message)
+        public static async Task SentMessage(string message)
         {
             var result = await TelegramClient.GetContactsAsync();
 
@@ -52,6 +54,30 @@ namespace telegram_spamer.Services
             if (user != null)
             {
                 await TelegramClient.SendMessageAsync(new TLInputPeerUser {UserId = 337383405}, message + " 😚");
+                Console.WriteLine($"Send: {message + " 😚"}");
+            }
+        }
+
+        public static async Task SentAudio(string message)
+        {
+            var result = await TelegramClient.GetContactsAsync();
+
+            var user = result.Users
+                .Where(absUser => absUser.GetType() == typeof(TLUser))
+                .Cast<TLUser>()
+                .FirstOrDefault(x => x.Username == "gektorsun");
+
+            var attr = new TLVector<TLAbsDocumentAttribute>()
+            {
+                new TLDocumentAttributeAudio {Voice = true},
+            };
+
+            if (user != null)
+            {
+                var file = new StreamReader(@"C:\Users\pasha\OneDrive\trash\Обэме (донат Братишкина)_uAZk.ogg");
+                var fileResult = (TLInputFile) await TelegramClient.UploadFile("test.ogg", file);
+                await TelegramClient.SendUploadedDocument(new TLInputPeerUser {UserId = 337383405}, fileResult,
+                    "", "audio/ogg", attr);
                 Console.WriteLine($"Send: {message + " 😚"}");
             }
         }
@@ -81,11 +107,12 @@ namespace telegram_spamer.Services
                         _hash = await TelegramClient.SendCodeRequestAsync(_phone);
                         await SentBotMessage(chatId, "Print telegram code");
                         break;
-                    case { } command when command.StartsWith("/code"):
+                    case { } command when command.StartsWith("code"):
                         var argsCode = command.Split(" ").ToList();
                         try
                         {
-                            await TelegramClient.MakeAuthAsync(_phone, _hash, argsCode[1]);
+                            await TelegramClient.MakeAuthAsync(_phone, _hash,
+                                argsCode[1].Replace("\"", ""));
                         }
                         catch (CloudPasswordNeededException)
                         {
